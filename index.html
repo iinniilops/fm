@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Chat</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        #chat-container { width: 100%; max-width: 500px; height: 95%; display: flex; flex-direction: column; border: 1px solid #333; border-radius: 8px; overflow: hidden; background-color: #1e1e1e; }
+        #messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column-reverse; }
+        .message { max-width: 75%; padding: 10px 15px; border-radius: 18px; margin-bottom: 10px; word-wrap: break-word; }
+        .sent { background-color: #005c4b; color: white; align-self: flex-end; }
+        .received { background-color: #363636; color: white; align-self: flex-start; }
+        #form { display: flex; padding: 10px; border-top: 1px solid #333; }
+        #input { flex-grow: 1; border: none; padding: 12px; border-radius: 20px; background-color: #363636; color: white; outline: none; }
+        #form button { background-color: #005c4b; color: white; border: none; padding: 0 15px; margin-left: 10px; border-radius: 50%; font-size: 20px; cursor: pointer; aspect-ratio: 1/1; }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="messages"></div>
+        <form id="form">
+            <input id="input" autocomplete="off" placeholder="Type a message..." />
+            <button type="submit">&#10148;</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        // --------------------------------------------------------------------
+        // TODO: REPLACE THIS WITH YOUR OWN FIREBASE CONFIG FROM STEP 2
+        // --------------------------------------------------------------------
+        const firebaseConfig = {
+    apiKey: "AIzaSyDBSYI400UmUfJHKpCMoxJRUolDY_xQhKI",
+    authDomain: "mychatapp-c034a.firebaseapp.com",
+    projectId: "mychatapp-c034a",
+    storageBucket: "mychatapp-c034a.firebasestorage.app",
+    messagingSenderId: "942436741647",
+    appId: "1:942436741647:web:5db4a18ec0c3d3fb54297a",
+    measurementId: "G-MEXHFHP1SR"
+  };
+        // --------------------------------------------------------------------
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const messagesDiv = document.getElementById('messages');
+        const form = document.getElementById('form');
+        const input = document.getElementById('input');
+        
+        // Use a random ID for this session to distinguish sent/received
+        const sessionId = Math.random().toString(36).substr(2, 9);
+
+        // Get the secret chat room key from the URL (e.g., ?mypass)
+        const chatKey = window.location.search.substring(1) || 'default';
+        const messagesRef = database.ref('chats/' + chatKey);
+
+        // Listen for new messages
+        messagesRef.on('child_added', (snapshot) => {
+            const msgData = snapshot.val();
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.textContent = msgData.text;
+
+            if (msgData.sender === sessionId) {
+                messageElement.classList.add('sent');
+            } else {
+                messageElement.classList.add('received');
+            }
+            messagesDiv.prepend(messageElement);
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (input.value) {
+                messagesRef.push({
+                    sender: sessionId,
+                    text: input.value
+                });
+                input.value = '';
+            }
+        });
+    </script>
+</body>
+</html>
