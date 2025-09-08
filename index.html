@@ -48,9 +48,9 @@
             border: 2px solid var(--red-primary);
             box-shadow: 0 0 25px var(--border-glow);
             border-radius: 12px;
-            width: 95%;
+            width: 100%; /* Changed from 95% to 100% */
             max-width: 500px;
-            height: 95vh;
+            height: 100%; /* <<<<<<<<<<<<<<<< YEH HAI FIX! (95vh se 100% kiya) */
             max-height: 850px;
             display: flex;
             flex-direction: column;
@@ -60,6 +60,7 @@
 
         /* --- 1. Login Screen --- */
         #login-box {
+            height: auto; /* Login box should not be full height */
             padding: 40px;
             text-align: center;
             justify-content: center;
@@ -187,7 +188,7 @@
             apiKey: "AIzaSyDBSYI400UmUfJHKpCMoxJRUolDY_xQhKI",
             authDomain: "mychatapp-c034a.firebaseapp.com",
             projectId: "mychatapp-c034a",
-            storageBucket: "mychatapp-c034a.appspot.com", // Corrected storage bucket URL
+            storageBucket: "mychatapp-c034a.appspot.com",
             messagingSenderId: "942436741647",
             appId: "1:942436741647:web:5db4a18ec0c3d3fb54297a",
             measurementId: "G-MEXHFHP1SR"
@@ -196,15 +197,12 @@
         const database = firebase.database();
         const storage = firebase.storage();
         
-        // --- DOM Elements ---
         const loginContainer = document.getElementById('login-container');
         const chatContainer = document.getElementById('chat-container');
         const dummyContainer = document.getElementById('dummy-container');
-        
         const loginButton = document.getElementById('login-button');
         const roomNameInput = document.getElementById('room-name-input');
         const errorMessage = document.getElementById('error-message');
-
         const roomNameDisplay = document.getElementById('room-name-display');
         const hideButton = document.getElementById('hide-button');
         const messagesDiv = document.getElementById('messages');
@@ -212,14 +210,11 @@
         const textInput = document.getElementById('text-input');
         const imageButton = document.getElementById('image-button');
         const imageInput = document.getElementById('image-input');
-
         const dummyIframe = document.getElementById('dummy-iframe');
         const returnButton = document.getElementById('return-button');
-
         let messagesRef = null;
         const sessionId = Math.random().toString(36).substr(2, 9);
         
-        // --- Screen Switching Logic ---
         function showScreen(screen) {
             if (screen === 'login') {
                 loginContainer.style.display = 'flex';
@@ -236,7 +231,6 @@
             }
         }
         
-        // --- Login Logic ---
         loginButton.onclick = () => {
             const roomName = roomNameInput.value.trim();
             if (roomName) {
@@ -253,14 +247,12 @@
             listenForMessages();
         }
 
-        // --- Hide/Return Logic ---
         hideButton.onclick = () => {
             dummyIframe.src = "https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1";
             showScreen('dummy');
         };
         returnButton.onclick = () => showScreen('chat');
 
-        // --- Chat Functionality ---
         chatForm.onsubmit = e => { e.preventDefault(); if (textInput.value) { sendMessage({ type: 'text', text: textInput.value }); textInput.value = ''; } };
         imageButton.onclick = () => imageInput.click();
         imageInput.onchange = e => {
@@ -291,7 +283,6 @@
             });
         }
 
-        // Initialize the view to the login screen when the page loads
         showScreen('login');
     </script>
 </body>
